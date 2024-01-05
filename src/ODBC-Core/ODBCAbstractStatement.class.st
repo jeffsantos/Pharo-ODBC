@@ -229,6 +229,21 @@ ODBCAbstractStatement >> describeCols: columnNumbers [
 						decimalDigitsPtr: decimalDigits
 						nullablePtr: nullable.
 			self dbCheckException: ret.
+			
+		  colNameLen value > (nameBufSize) ifTrue: [ nameBufSize := (colNameLen value).
+																  name := ExternalAddress gcallocate: (self stringEncoder byteSizeForCharacters: nameBufSize + 1). 
+																			ret := lib
+																						sqlDescribeCol: hStmt
+																						columnNumber: each
+																						columnName: name
+																						bufferLength: nameBufSize
+																						nameLengthPtr: colNameLen
+																						dataTypePtr: dataType
+																						columnSizePtr: columnSize
+																						decimalDigitsPtr: decimalDigits
+																						nullablePtr: nullable.
+																			self dbCheckException: ret.
+																].
 
 			col := ODBCColAttr new
 					columnNumber: each;
